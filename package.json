@@ -1,7 +1,7 @@
 {
   "name": "@realmjs/account-postgresdb-driver",
   "description": "Postgres Database driver for Account",
-  "main": "src/driver.class.js",
+  "main": "src/db-driver.js",
   "scripts": {
     "test": "jest"
   },
@@ -19,7 +19,9 @@
     "pg": "^8.11.3"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.23.7",
     "core-js": "^3.35.0",
+    "dotenv": "^16.3.1",
     "jest": "^29.7.0",
     "regenerator-runtime": "^0.14.1"
   }
