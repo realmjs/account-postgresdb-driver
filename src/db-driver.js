@@ -1,6 +1,8 @@
 "use strict"
 
 const { Pool } = require('pg');
+const { createInsertQuery } = require('./helper');
+const account = require('../../localpostgres/scripts/account');
 
 class DbDriver {
 
@@ -48,6 +50,23 @@ class DbDriver {
         account.profile = result.rows[0];
       }
       return account;
+    },
+
+    insert: async(user) => {
+      const { profile, ...account } = user;
+      {
+          const [text, values] = createInsertQuery('Account', account, { returning: '*' });
+          const { rows } = await this.pool.query(text, values);
+          profile.uid = rows[0].uid;
+      }
+      {
+        const [text, values] = createInsertQuery('Profile', profile);
+        await this.pool.query(text, values);
+      }
+      return {
+        ...account,
+        profile,
+      }
     }
   }
 

@@ -106,3 +106,55 @@ test("Find Account by uid should return undefined for non-exist one", async () =
 
 });
 
+test("Insert new account", async () => {
+
+  await db.Account.insert({
+    email: 'tester@udu.io',
+    salty: {
+      head: '5z3z8hf8',
+      tail: 'fqbp89wk'
+    },
+    realms: {
+      public: { roles: ['member'] }
+    },
+    credentials: {
+      password: '04796c1b1318ee7a1711eaa9513634562549bddb792259f000e1eec9de8c96e2'
+    },
+    created_at: new Date(),
+    profile: {
+      fullname: 'Awesome Test',
+      display_name: 'Teser',
+      gender: 'female',
+      phone: ['0987654321'],
+      email: ['tester@udu.io'],
+      address: null
+    }
+   });
+
+   const account = await db.Account.find({ email: 'tester@udu.io' });
+
+  expect(account).toEqual({
+    uid: expect.any(String),
+    email: 'tester@udu.io',
+    salty: {
+      head: '5z3z8hf8',
+      tail: 'fqbp89wk'
+    },
+    realms: {
+      public: { roles: ['member'] }
+    },
+    credentials: {
+      password: '04796c1b1318ee7a1711eaa9513634562549bddb792259f000e1eec9de8c96e2'
+    },
+    created_at: expect.any(Date),
+    profile: {
+      fullname: 'Awesome Test',
+      display_name: 'Teser',
+      gender: 'female',
+      phone: ['0987654321'],
+      email: ['tester@udu.io'],
+      address: null
+    }
+  });
+
+});
