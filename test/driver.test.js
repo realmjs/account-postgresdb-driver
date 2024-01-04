@@ -89,3 +89,20 @@ test("Find Account by uid", async () => {
   });
 
 });
+
+test("Find Account by email should return undefined for non-exist one", async () => {
+
+  const account = await db.Account.find({ email: 'nonexist@udu.io' });
+
+  expect(account).toBeUndefined();
+
+});
+
+test("Find Account by uid should return undefined for non-exist one", async () => {
+
+  const account = await db.Account.find({ uid: '99999999-9999-9999-9999-999999999990' });
+
+  expect(account).toBeUndefined();
+
+});
+
