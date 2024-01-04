@@ -67,6 +67,20 @@ class DbDriver {
         ...account,
         profile,
       }
+    },
+
+    Password: {
+      update: async (uid, changeValue) => {
+        const query = `
+          UPDATE
+            Account
+          SET
+            credentials = $1
+          WHERE
+            uid = $2
+        `
+        await this.pool.query(query, [{ password: changeValue }, uid]);
+      }
     }
   }
 

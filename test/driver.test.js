@@ -158,3 +158,16 @@ test("Insert new account", async () => {
   });
 
 });
+
+test("Update account password", async () => {
+
+  const { uid } = await db.Account.find({ email: 'dev@udu.io' });
+  await db.Account.Password.update(uid, 'QWERTY');
+
+  const account = await db.Account.find({ email: 'dev@udu.io' });
+
+  expect(account.credentials).toEqual({
+    password: 'QWERTY'
+  });
+
+});
