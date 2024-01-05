@@ -195,7 +195,7 @@ test("Insert, find and remove login session", async () => {
     created_at: expect.any(Date)
   });
 
-  db.LoginSession.remove({
+  await db.LoginSession.remove({
     uid: '99999999-9999-9999-9999-999999999990',
     sid: 'XxxxxxxX'
   });
@@ -204,6 +204,44 @@ test("Insert, find and remove login session", async () => {
     await db.LoginSession.find({
       uid: '99999999-9999-9999-9999-999999999990',
       sid: 'XxxxxxxX'
+    })
+  ).toBeUndefined();
+
+});
+
+test("Remove all login sessions of a user", async () => {
+
+  await db.LoginSession.insert({
+    uid: '99999999-9999-9999-9999-999999999991',
+    sid: 'XxxxxxxX',
+    skey: 'KKKKKKKKKKKKKKKK',
+    user_agent: { isDesktop: true, os: 'Windows 11' },
+    created_at: new Date()
+  });
+
+  await db.LoginSession.insert({
+    uid: '99999999-9999-9999-9999-999999999991',
+    sid: 'YxxxxxxY',
+    skey: 'KKKKKKKKKKKKKKKK',
+    user_agent: { isDesktop: true, os: 'Windows 11' },
+    created_at: new Date()
+  });
+
+  await db.LoginSession.remove({
+    uid: '99999999-9999-9999-9999-999999999991'
+  });
+
+  expect(
+    await db.LoginSession.find({
+      uid: '99999999-9999-9999-9999-999999999991',
+      sid: 'XxxxxxxX'
+    })
+  ).toBeUndefined();
+
+  expect(
+    await db.LoginSession.find({
+      uid: '99999999-9999-9999-9999-999999999991',
+      sid: 'YxxxxxxY'
     })
   ).toBeUndefined();
 

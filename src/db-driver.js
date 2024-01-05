@@ -96,7 +96,11 @@ class DbDriver {
     },
 
     remove: async ({uid, sid}) => {
-      await this.pool.query('DELETE FROM LoginSession WHERE uid = $1 AND sid = $2', [uid, sid]);
+      if (sid) {
+        await this.pool.query('DELETE FROM LoginSession WHERE uid = $1 AND sid = $2', [uid, sid]);
+      } else {
+        await this.pool.query('DELETE FROM LoginSession WHERE uid = $1', [uid]);
+      }
     },
   }
 
