@@ -84,6 +84,22 @@ class DbDriver {
     }
   }
 
+  LoginSession = {
+    find: async ({uid, sid}) => {
+      const { rows } = await this.pool.query('SELECT * FROM LoginSession WHERE uid = $1 AND sid = $2', [uid, sid]);
+      return rows[0];
+    },
+
+    insert: async (session) => {
+      const [text, values] = createInsertQuery('LoginSession', session);
+      await this.pool.query(text, values);
+    },
+
+    remove: async ({uid, sid}) => {
+      await this.pool.query('DELETE FROM LoginSession WHERE uid = $1 AND sid = $2', [uid, sid]);
+    },
+  }
+
 }
 
 module.exports = DbDriver;
