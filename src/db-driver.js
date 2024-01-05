@@ -57,12 +57,14 @@ class DbDriver {
       {
           const [text, values] = createInsertQuery('Account', account, { returning: '*' });
           const { rows } = await this.pool.query(text, values);
+          account.uid = rows[0].uid;
           profile.uid = rows[0].uid;
       }
       {
         const [text, values] = createInsertQuery('Profile', profile);
         await this.pool.query(text, values);
       }
+      delete profile.uid;
       return {
         ...account,
         profile,
