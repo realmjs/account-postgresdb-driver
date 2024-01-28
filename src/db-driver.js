@@ -2,7 +2,6 @@
 
 const { Pool } = require('pg');
 const { createInsertQuery } = require('./helper');
-const account = require('../../localpostgres/scripts/account');
 
 class DbDriver {
 
