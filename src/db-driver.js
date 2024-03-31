@@ -43,31 +43,47 @@ class DbDriver {
     find: async({ uid, email }) => {
       const prop = uid !== undefined ? { name: 'uid', value: uid } : { name: 'email', value: email }
       const result = await this.pool.query(`SELECT * FROM Account WHERE ${prop.name} = $1`, [prop.value]);
-      const account = result.rows[0];
-      if (account?.uid) {
-        const result = await this.pool.query(`SELECT fullname, display_name, address, gender, phone, email FROM Profile WHERE uid = $1`, [account?.uid]);
-        account.profile = result.rows[0];
+      const acc = result.rows[0];
+      if (acc?.uid) {
+        const account  = { profile: {}, realms: {} };
+        ['uid', 'salty', 'credentials', 'created_at'].forEach(key => account[key] = acc[key]);
+        ['fullname', 'display_name', 'gender', 'email', 'phone', 'additional_phone', 'additional_email',  'address'].forEach(key => account.profile[key] = acc[key]);
+        // get realm
+        const result = await this.pool.query(`SELECT realm, roles FROM UserRealm WHERE uid = $1`, [account?.uid]);
+        if (result.rows.length > 0) {
+          for (const row of  result.rows) {
+            account.realms[row?.realm] = { roles: row.roles };
+          }
+        }
+        return account;
+      } else {
+        return undefined
       }
-      return account;
     },
 
     insert: async(user) => {
-      const { profile, ...account } = user;
+      const { realms, profile, ...account } = user;
+      for (const key in profile) {
+        account[key] = profile[key];
+      }
       {
           const [text, values] = createInsertQuery('Account', account, { returning: '*' });
           const { rows } = await this.pool.query(text, values);
           account.uid = rows[0].uid;
-          profile.uid = rows[0].uid;
       }
       {
-        const [text, values] = createInsertQuery('Profile', profile);
+        const rows = [];
+        for  (const realm in realms) {
+          rows.push({
+            uid: account.uid,
+            realm: realm,
+            roles: realms[realm]?.roles
+          });
+        }
+        const [text, values] = createInsertQuery('UserRealm', rows);
         await this.pool.query(text, values);
       }
-      delete profile.uid;
-      return {
-        ...account,
-        profile,
-      }
+      return { uid: account.uid, ...user }
     },
 
     Password: {

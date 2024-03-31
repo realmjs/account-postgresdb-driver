@@ -35,7 +35,6 @@ test("Find Account by email", async () => {
 
   expect(account).toEqual({
     uid: expect.any(String),
-    email: 'dev@udu.io',
     salty: {
       head: '5z3z8hf8',
       tail: 'fqbp89wk'
@@ -49,10 +48,12 @@ test("Find Account by email", async () => {
     created_at: expect.any(Date),
     profile: {
       fullname: 'Awesome Dev',
-      display_name: 'Awesome',
+      display_name: 'Dev',
       gender: 'male',
-      phone: ['0987654321'],
-      email: ['dev@udu.io'],
+      email: 'dev@udu.io',
+      phone: null,
+      additional_phone: ['0987654321'],
+      additional_email: ['dev@udu.io'],
       address: null
     }
   });
@@ -66,7 +67,6 @@ test("Find Account by uid", async () => {
 
   expect(account).toEqual({
     uid: uid,
-    email: 'dev@udu.io',
     salty: {
       head: '5z3z8hf8',
       tail: 'fqbp89wk'
@@ -80,10 +80,12 @@ test("Find Account by uid", async () => {
     created_at: expect.any(Date),
     profile: {
       fullname: 'Awesome Dev',
-      display_name: 'Awesome',
+      display_name: 'Dev',
       gender: 'male',
-      phone: ['0987654321'],
-      email: ['dev@udu.io'],
+      email: 'dev@udu.io',
+      phone: null,
+      additional_phone: ['0987654321'],
+      additional_email: ['dev@udu.io'],
       address: null
     }
   });
@@ -122,11 +124,13 @@ test("Insert new account", async () => {
     },
     created_at: new Date(),
     profile: {
-      fullname: 'Awesome Test',
-      display_name: 'Teser',
-      gender: 'female',
-      phone: ['0987654321'],
-      email: ['tester@udu.io'],
+      fullname: 'Awesome Dev',
+      display_name: 'Dev',
+      gender: 'male',
+      email: 'tester@udu.io',
+      phone: null,
+      additional_phone: ['0987654321'],
+      additional_email: ['tester@udu.io'],
       address: null
     }
    });
@@ -135,7 +139,6 @@ test("Insert new account", async () => {
 
   expect(account).toEqual({
     uid: expect.any(String),
-    email: 'tester@udu.io',
     salty: {
       head: '5z3z8hf8',
       tail: 'fqbp89wk'
@@ -148,11 +151,13 @@ test("Insert new account", async () => {
     },
     created_at: expect.any(Date),
     profile: {
-      fullname: 'Awesome Test',
-      display_name: 'Teser',
-      gender: 'female',
-      phone: ['0987654321'],
-      email: ['tester@udu.io'],
+      fullname: 'Awesome Dev',
+      display_name: 'Dev',
+      gender: 'male',
+      email: 'tester@udu.io',
+      phone: null,
+      additional_phone: ['0987654321'],
+      additional_email: ['tester@udu.io'],
       address: null
     }
   });
@@ -174,8 +179,10 @@ test("Update account password", async () => {
 
 test("Insert, find and remove login session", async () => {
 
+  const { uid } = await db.Account.find({ email: 'dev@udu.io' });
+
   await db.LoginSession.insert({
-    uid: '99999999-9999-9999-9999-999999999990',
+    uid: uid,
     sid: 'XxxxxxxX',
     skey: 'KKKKKKKKKKKKKKKK',
     user_agent: { isDesktop: true, os: 'Windows 11' },
@@ -183,12 +190,12 @@ test("Insert, find and remove login session", async () => {
   });
 
   const session = await db.LoginSession.find({
-    uid: '99999999-9999-9999-9999-999999999990',
+    uid: uid,
     sid: 'XxxxxxxX'
   });
 
   expect(session).toEqual({
-    uid: '99999999-9999-9999-9999-999999999990',
+    uid: uid,
     sid: 'XxxxxxxX',
     skey: 'KKKKKKKKKKKKKKKK',
     user_agent: { isDesktop: true, os: 'Windows 11' },
@@ -196,13 +203,13 @@ test("Insert, find and remove login session", async () => {
   });
 
   await db.LoginSession.remove({
-    uid: '99999999-9999-9999-9999-999999999990',
+    uid: uid,
     sid: 'XxxxxxxX'
   });
 
   expect(
     await db.LoginSession.find({
-      uid: '99999999-9999-9999-9999-999999999990',
+      uid:  uid,
       sid: 'XxxxxxxX'
     })
   ).toBeUndefined();
@@ -211,8 +218,10 @@ test("Insert, find and remove login session", async () => {
 
 test("Remove all login sessions of a user", async () => {
 
+  const { uid } = await db.Account.find({ email: 'dev@udu.io' });
+
   await db.LoginSession.insert({
-    uid: '99999999-9999-9999-9999-999999999991',
+    uid: uid,
     sid: 'XxxxxxxX',
     skey: 'KKKKKKKKKKKKKKKK',
     user_agent: { isDesktop: true, os: 'Windows 11' },
@@ -220,7 +229,7 @@ test("Remove all login sessions of a user", async () => {
   });
 
   await db.LoginSession.insert({
-    uid: '99999999-9999-9999-9999-999999999991',
+    uid: uid,
     sid: 'YxxxxxxY',
     skey: 'KKKKKKKKKKKKKKKK',
     user_agent: { isDesktop: true, os: 'Windows 11' },
@@ -228,19 +237,19 @@ test("Remove all login sessions of a user", async () => {
   });
 
   await db.LoginSession.remove({
-    uid: '99999999-9999-9999-9999-999999999991'
+    uid: uid
   });
 
   expect(
     await db.LoginSession.find({
-      uid: '99999999-9999-9999-9999-999999999991',
+      uid: uid,
       sid: 'XxxxxxxX'
     })
   ).toBeUndefined();
 
   expect(
     await db.LoginSession.find({
-      uid: '99999999-9999-9999-9999-999999999991',
+      uid: uid,
       sid: 'YxxxxxxY'
     })
   ).toBeUndefined();
