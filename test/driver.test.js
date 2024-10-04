@@ -255,3 +255,9 @@ test("Remove all login sessions of a user", async () => {
   ).toBeUndefined();
 
 });
+
+test.only("Update Profile", async () => {
+  const  { uid } = await db.Account.find({ email: 'dev@udu.io' });
+  const profile = { fullname: 'John Doe', email: 'john.doe@example.com' };
+  await db.Account.Profile.update(uid, profile);
+});

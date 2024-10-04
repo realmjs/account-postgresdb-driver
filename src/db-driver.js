@@ -98,6 +98,25 @@ class DbDriver {
         `
         await this.pool.query(query, [{ password: changeValue }, uid]);
       }
+    },
+
+    Profile: {
+      update: async (uid, changeValue) => {
+        const updateFields = Object.keys(changeValue)
+          .map((key) => `"${key}" = $${Object.keys(changeValue).indexOf(key) + 1}`)
+          .join(', ');
+
+        const query = `
+          UPDATE
+            Account
+          SET
+            ${updateFields}
+          WHERE
+            uid  = $${Object.keys(changeValue).length + 1}
+        `;
+        await this.pool.query(query, [...Object.values(changeValue), uid]);
+      }
+
     }
   }
 
