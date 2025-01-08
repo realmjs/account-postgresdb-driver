@@ -12,6 +12,9 @@ class DbDriver {
       database:  process.env.POSTGRES_DB,
       user: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
+      ssl: {
+        rejectUnauthorized: false // Allows SSL connection; disables certificate verification
+      }
     };
     this.pool = new Pool({
       ...this.envConfigs,
