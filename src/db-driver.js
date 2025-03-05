@@ -83,7 +83,8 @@ class DbDriver {
           rows.push({
             uid: account.uid,
             realm: realm,
-            roles: realms[realm]?.roles
+            roles: realms[realm]?.roles,
+            joined_at: new Date(),
           });
         }
         const [text, values] = createInsertQuery('UserRealm', rows);
